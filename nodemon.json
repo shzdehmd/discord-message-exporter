@@ -1,0 +1,15 @@
+{
+    "watch": ["*.js", "lib/", "scripts/", "views/", "public/"],
+    "ext": "js,json,njk,css",
+    "ignore": [
+        "node_modules/",
+        "Exports/",
+        "logs/",
+        "*.log",
+        "messages/",
+        "processed_messages/",
+        "processed_html/",
+        "downloaded_files/"
+    ],
+    "delay": "1500"
+}
