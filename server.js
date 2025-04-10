@@ -16,11 +16,6 @@ const nunjucksEnv = nunjucks.configure('views', {
     express: app,
     watch: true, // Auto-reload templates during development
 });
-// Add custom Nunjucks filter 'find' if needed (useful for finding selected guild)
-nunjucksEnv.addFilter('find', (array, predicate) => {
-    if (!Array.isArray(array)) return undefined;
-    return array.find(predicate);
-});
 app.set('view engine', 'njk');
 
 // --- Middleware ---
@@ -57,6 +52,7 @@ app.get('/', (req, res) => {
         token: req.query.token || '',
         guilds: null,
         selectedGuildId: null,
+        selectedGuild: null,
         channels: null,
         selectedChannelId: null,
         error: req.query.error || null,
@@ -84,6 +80,7 @@ app.post('/fetch-guilds', async (req, res) => {
             token: token, // Pass token back to the template for the next step
             guilds: guilds.sort((a, b) => a.name.localeCompare(b.name)), // Sort guilds alphabetically
             selectedGuildId: null,
+            selectedGuild: null,
             channels: null,
             selectedChannelId: null,
             error: null,
@@ -118,8 +115,25 @@ app.post('/fetch-channels', async (req, res) => {
 
     logger.logInfo(`Fetching channels for guild ID: ${guildId}`);
     try {
-        // Fetch guilds again to pass the full list back to the template for rendering
+        // Fetch guilds list again
         const guilds = await fetchGuilds(token);
+
+        // Find the selected guild object from the fetched list
+        const selectedGuildObject = guilds.find((g) => g.id === guildId);
+        if (!selectedGuildObject) {
+            logger.logWarn(`Selected guildId ${guildId} not found in fetched guilds.`);
+            return res.render('index', {
+                // Render guild selection again with error
+                pageTitle: 'Discord Exporter - Select Server',
+                token: token,
+                guilds: guilds.sort((a, b) => a.name.localeCompare(b.name)),
+                selectedGuildId: null,
+                selectedGuild: null,
+                channels: null,
+                selectedChannelId: null,
+                error: `Could not find the selected server (ID: ${guildId}). Please select again.`,
+            });
+        }
 
         // Fetch channels for the selected guild
         const channelsAndCategories = await fetchChannels(token, guildId); // This includes categories now
@@ -176,6 +190,7 @@ app.post('/fetch-channels', async (req, res) => {
             token: token,
             guilds: guilds.sort((a, b) => a.name.localeCompare(b.name)), // Keep guilds sorted
             selectedGuildId: guildId,
+            selectedGuild: selectedGuildObject,
             channels: channelsWithThreads, // Pass channels with threads included
             selectedChannelId: null,
             error: null,
@@ -202,6 +217,7 @@ app.post('/fetch-channels', async (req, res) => {
                 token: req.body.token,
                 guilds: guilds.sort((a, b) => a.name.localeCompare(b.name)),
                 selectedGuildId: null,
+                selectedGuild: null,
                 channels: null,
                 selectedChannelId: null,
                 error: errorMessage,
@@ -314,6 +330,8 @@ const server = app.listen(port, () => {
 
 // --- Graceful Shutdown ---
 const shutdown = async (signal) => {
+    if (isExiting) return;
+    isExiting = true; // Prevent multiple calls
     logger.logWarn(`Received ${signal}. Starting graceful shutdown...`);
     console.log(`\nReceived ${signal}. Shutting down gracefully...`);
 
@@ -355,5 +373,6 @@ const shutdown = async (signal) => {
 };
 
 // Listen for termination signals
+let isExiting = false;
 process.on('SIGINT', () => shutdown('SIGINT')); // CTRL+C
 process.on('SIGTERM', () => shutdown('SIGTERM')); // Docker stop, systemd stop etc.

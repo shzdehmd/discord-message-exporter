@@ -53,15 +53,14 @@
     {% endif %}
 
     {# === Step 3: Select Channel/Thread === #}
-    {% if guilds and channels %}
+    {% if guilds and channels and selectedGuild %}
         {# Display selected guild name #}
-        {% set selectedGuild = guilds | find(item => item.id == selectedGuildId) %}
-        <h3>Server: {{ selectedGuild.name if selectedGuild else 'Unknown Guild' }}</h3>
+        <h3>Server: {{ selectedGuild.name }} (ID: {{ selectedGuild.id }})</h3>
 
         <form action="/start-export" method="POST" class="form-section">
             <h2>Step 3: Select Channel or Thread to Export</h2>
             <input type="hidden" name="token" value="{{ token }}">
-            <input type="hidden" name="guildId" value="{{ selectedGuildId }}"> {# Keep guildId for potential restart #}
+            <input type="hidden" name="guildId" value="{{ selectedGuild.id }}"> {# Keep guildId for potential restart #}
 
             <div class="form-group">
                 <label for="channel">Channel/Thread:</label>
@@ -77,7 +76,7 @@
                                         <option value="{{ childChannel.id }}"># {{ childChannel.name }} (ID: {{ childChannel.id }})</option>
                                         {# Find threads belonging to this childChannel (if any were passed) #}
                                         {% for thread in childChannel.threads | default([]) %}
-                                            <option value="{{ thread.id }}"> L 🧵 {{ thread.name }} (Thread in #{{ childChannel.name }}) (ID: {{ thread.id }})</option>
+                                            <option value="{{ thread.id }}" class="thread-option"> ↳ 🧵 {{ thread.name }} (Thread in #{{ childChannel.name }}) (ID: {{ thread.id }})</option>
                                         {% endfor %}
                                     {% endif %}
                                 {% endfor %}
@@ -88,7 +87,7 @@
                                 <option value="{{ channel.id }}"># {{ channel.name }} (ID: {{ channel.id }})</option>
                                 {# Find threads belonging to this channel (if any were passed) #}
                                 {% for thread in channel.threads | default([]) %}
-                                    <option value="{{ thread.id }}"> L 🧵 {{ thread.name }} (Thread in #{{ channel.name }}) (ID: {{ thread.id }})</option>
+                                    <option value="{{ thread.id }}"> ↳ 🧵 {{ thread.name }} (Thread in #{{ channel.name }}) (ID: {{ thread.id }})</option>
                                 {% endfor %}
                             {% endif %}
                             {# Render standalone threads (e.g., forum posts might appear this way) #}
@@ -116,9 +115,17 @@
 
         {# Placeholder for export progress later #}
         <div id="export-progress" style="margin-top: 20px;">
-            {# Progress updates will go here via JavaScript later #}
+            {# Progress updates will go here via JavaScript #}
         </div>
-
+    {# Add handling for case where selectedGuild was expected but not found (e.g., guildId was invalid) #}
+    {% elif guilds and channels and not selectedGuild %}
+        <div class="alert alert-danger">
+            Could not display channels because the details for the selected server (ID: {{ selectedGuildId }}) could not be found. This might happen if the server list changed or an invalid ID was submitted.
+        </div>
+        <form action="/fetch-guilds" method="POST" style="display: inline;">
+            <input type="hidden" name="token" value="{{ token }}">
+            <button type="submit" class="btn btn-secondary">Back (Select Server Again)</button>
+        </form>
     {% endif %}
 
 {% endblock %}
