@@ -1,0 +1,129 @@
+{# views/index.njk #}
+{% extends "layout.njk" %}
+
+{% block content %}
+
+    {# Display Error Messages #}
+    {% if error %}
+        <div class="alert alert-danger">
+            <strong>Error:</strong> {{ error }}
+        </div>
+    {% endif %}
+
+    {# === Step 1: Enter Token === #}
+    {% if not guilds %}
+        <form action="/fetch-guilds" method="POST" class="form-section">
+            <h2>Step 1: Enter Discord Token</h2>
+            <p class="warning">
+                <strong class="warning-title">Important Security Notice:</strong><br>
+                Never share your Discord token with anyone you don't trust. It grants full access to your account.
+                This application processes the token locally on the server you run it on and uses it *only* to communicate directly with the Discord API for fetching data.
+                Your token is temporarily used during the request process but is not stored persistently by this application beyond the current session/interaction unless explicitly designed to do so (which this initial version does not).
+                Consider using a Bot Token for servers you own or manage for enhanced security if possible, although fetching all user guilds often requires a User Token.
+            </p>
+            <div class="form-group">
+                <label for="token">Discord Token:</label>
+                <input type="password" id="token" name="token" class="form-control" required value="{{ token }}">
+                {# Pre-fill token if redirected back after error #}
+            </div>
+            <button type="submit" class="btn btn-primary">Fetch My Servers</button>
+        </form>
+    {% endif %}
+
+    {# === Step 2: Select Guild === #}
+    {% if guilds and not channels %}
+        {# Keep token in a hidden field for the next step #}
+        <form action="/fetch-channels" method="POST" class="form-section">
+            <h2>Step 2: Select a Server (Guild)</h2>
+            <input type="hidden" name="token" value="{{ token }}">
+            <div class="form-group">
+                <label for="guild">Server:</label>
+                <select id="guild" name="guildId" class="form-control" required>
+                    <option value="" disabled selected>-- Select a Server --</option>
+                    {% for guild in guilds %}
+                        <option value="{{ guild.id }}">{{ guild.name }} (ID: {{ guild.id }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-actions">
+                <a href="/" class="btn btn-secondary">Back (Enter Token)</a>
+                <button type="submit" class="btn btn-primary">Select Server</button>
+            </div>
+        </form>
+    {% endif %}
+
+    {# === Step 3: Select Channel/Thread === #}
+    {% if guilds and channels %}
+        {# Display selected guild name #}
+        {% set selectedGuild = guilds | find(item => item.id == selectedGuildId) %}
+        <h3>Server: {{ selectedGuild.name if selectedGuild else 'Unknown Guild' }}</h3>
+
+        <form action="/start-export" method="POST" class="form-section">
+            <h2>Step 3: Select Channel or Thread to Export</h2>
+            <input type="hidden" name="token" value="{{ token }}">
+            <input type="hidden" name="guildId" value="{{ selectedGuildId }}"> {# Keep guildId for potential restart #}
+
+            <div class="form-group">
+                <label for="channel">Channel/Thread:</label>
+                <select id="channel" name="channelId" class="form-control" required>
+                    <option value="" disabled selected>-- Select a Channel or Thread --</option>
+                    {# Loop through channels, handling categories and threads #}
+                    {% for channel in channels %}
+                        {% if channel.type == 4 %} {# Type 4 is GUILD_CATEGORY #}
+                            <optgroup label="📁 {{ channel.name }}">
+                                {# Find channels belonging to this category #}
+                                {% for childChannel in channels %}
+                                    {% if childChannel.parent_id == channel.id and (childChannel.type == 0 or childChannel.type == 5) %} {# Text or News #}
+                                        <option value="{{ childChannel.id }}"># {{ childChannel.name }} (ID: {{ childChannel.id }})</option>
+                                        {# Find threads belonging to this childChannel (if any were passed) #}
+                                        {% for thread in childChannel.threads | default([]) %}
+                                            <option value="{{ thread.id }}"> L 🧵 {{ thread.name }} (Thread in #{{ childChannel.name }}) (ID: {{ thread.id }})</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            </optgroup>
+                        {% elif channel.parent_id == null and channel.type != 4 %} {# Channel not in a category #}
+                            {# Render Text/News channels not under a category #}
+                            {% if channel.type == 0 or channel.type == 5 %}
+                                <option value="{{ channel.id }}"># {{ channel.name }} (ID: {{ channel.id }})</option>
+                                {# Find threads belonging to this channel (if any were passed) #}
+                                {% for thread in channel.threads | default([]) %}
+                                    <option value="{{ thread.id }}"> L 🧵 {{ thread.name }} (Thread in #{{ channel.name }}) (ID: {{ thread.id }})</option>
+                                {% endfor %}
+                            {% endif %}
+                            {# Render standalone threads (e.g., forum posts might appear this way) #}
+                            {% if channel.type == 11 or channel.type == 12 or channel.type == 10 %}
+                                <option value="{{ channel.id }}">🧵 {{ channel.name }} (Thread) (ID: {{ channel.id }})</option>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                {# Simple display of fetched channels/threads for debugging/confirmation #}
+                {# <pre style="max-height: 150px; overflow-y: auto; background: #eee; padding: 5px;">{{ channels | dump | safe }}</pre> #}
+
+            </div>
+
+            <div class="form-actions">
+                {# Button to go back to Guild Selection - needs JS or another form post ideally #}
+                {# Simple link back might lose token state without more complex handling #}
+                <form action="/fetch-guilds" method="POST" style="display: inline;">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <button type="submit" class="btn btn-secondary">Back (Select Server)</button>
+                </form>
+                <button type="submit" class="btn btn-success" id="start-export-btn">Start Export</button>
+            </div>
+        </form>
+
+        {# Placeholder for export progress later #}
+        <div id="export-progress" style="margin-top: 20px;">
+            {# Progress updates will go here via JavaScript later #}
+        </div>
+
+    {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{# Add any page-specific JavaScript here later if needed #}
+{# Example: JS to handle the back button state better or show/hide password #}
+{% endblock %}

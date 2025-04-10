@@ -1,0 +1,59 @@
+{# views/error.njk #}
+{% extends "layout.njk" %}
+
+{# Override the page title from layout.njk #}
+{% block head %}
+    <title>Error {{ errorStatus | default('Detected') }} - Discord Exporter</title>
+{% endblock %}
+
+{% block content %}
+    <div class="error-page">
+        <h2>Oops! Something went wrong.</h2>
+
+        <div class="alert alert-danger">
+            <strong>Error {{ errorStatus | default('') }}:</strong> {{ errorMessage | default('An unexpected error occurred.') }}
+        </div>
+
+        {# Optionally show stack trace in development mode #}
+        {% if errorStack %}
+            <div class="stack-trace">
+                <h3>Stack Trace (Development Mode Only):</h3>
+                <pre>{{ errorStack }}</pre>
+            </div>
+        {% endif %}
+
+        <p>If the problem persists, please check the server logs for more details.</p>
+
+        <a href="/" class="btn btn-primary">Go back to Homepage</a>
+    </div>
+{% endblock %}
+
+{% block styles %}
+    {# Add specific styles for the error page if needed #}
+    <style>
+        .error-page {
+            text-align: center;
+        }
+        .stack-trace {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            text-align: left;
+            max-height: 400px; /* Limit height */
+            overflow-y: auto; /* Add scrollbar if needed */
+        }
+        .stack-trace h3 {
+            margin-top: 0;
+            font-size: 1.1em;
+             color: #dc3545; /* Red color for emphasis */
+        }
+        .stack-trace pre {
+            white-space: pre-wrap; /* Wrap long lines */
+            word-wrap: break-word;
+            font-size: 0.9em;
+            color: #333;
+        }
+    </style>
+{% endblock %}
