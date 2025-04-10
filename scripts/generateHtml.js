@@ -13,6 +13,20 @@ const { discordMessagesToHtml, EMOTE_MARKER_PREFIX } = require('../lib/htmlRende
 // Regex to identify processed message files and extract batch index
 const inputFileRegex = /^processed_messages_batch_(\d+)_\d+\.json$/;
 
+// --- ADD SANITIZE FUNCTION HERE ---
+/**
+ * Basic HTML entity encoding for content.
+ * Encodes &, <, >, ", '
+ * @param {string | any} text - Input text.
+ * @returns {string} - Sanitized text.
+ */
+function sanitize(text) {
+    if (typeof text !== 'string') return String(text); // Convert non-strings
+    const map = { '&': '&', '<': '<', '>': '>', '"': '"', "'": "'" };
+    return text.replace(/[&<>"']/g, (m) => map[m]);
+}
+// --- END SANITIZE FUNCTION ---
+
 /**
  * Reads CSS content from a file.
  * @param {string} cssPath - Absolute path to the CSS file.
