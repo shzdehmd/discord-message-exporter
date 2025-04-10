@@ -10,6 +10,9 @@ const { fetchGuilds, fetchChannels, fetchThreads } = require('./lib/discordApi')
 const app = express();
 const port = process.env.PORT || 3000;
 
+// --- Helper function for delays ---
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 // --- Nunjucks Setup ---
 const nunjucksEnv = nunjucks.configure('views', {
     autoescape: true,
@@ -138,29 +141,40 @@ app.post('/fetch-channels', async (req, res) => {
         // Fetch channels for the selected guild
         const channelsAndCategories = await fetchChannels(token, guildId); // This includes categories now
 
-        // Fetch threads for all relevant channels in parallel
-        const threadFetchPromises = channelsAndCategories
-            .filter((c) => [0, 5].includes(c.type)) // Only fetch threads for Text and News channels
-            .map((channel) =>
-                fetchThreads(token, channel.id, channel.type)
-                    .then((threads) => ({ channelId: channel.id, threads: threads }))
-                    .catch((threadError) => {
-                        // Log thread fetch errors but don't fail the whole channel request
-                        logger.logWarn(
-                            `Failed to fetch threads for channel ${channel.id} in guild ${guildId}`,
-                            threadError,
-                        );
-                        return { channelId: channel.id, threads: [] }; // Return empty array on error
-                    }),
-            );
+        // --- Fetch Threads Sequentially with Delays ---
+        logger.logInfo(
+            `Starting sequential thread fetch for ${channelsAndCategories.length} channels in guild ${guildId}...`,
+        );
+        const threadsMap = {};
+        const THREAD_FETCH_DELAY_MS = 300; // Delay in milliseconds between thread fetches (adjust as needed)
 
-        const threadResults = await Promise.all(threadFetchPromises);
-
-        // Create a map for easy lookup: channelId -> threads array
-        const threadsMap = threadResults.reduce((map, result) => {
-            map[result.channelId] = result.threads;
-            return map;
-        }, {});
+        for (const channel of channelsAndCategories) {
+            // Only fetch for types that can have threads (Text, News)
+            if ([0, 5].includes(channel.type)) {
+                try {
+                    logger.logInfo(`Fetching threads for channel: ${channel.name} (${channel.id})`);
+                    const threads = await fetchThreads(token, channel.id, channel.type);
+                    threadsMap[channel.id] = threads || []; // Store fetched threads
+                    logger.logInfo(
+                        ` -> Fetched ${threadsMap[channel.id].length} threads for ${
+                            channel.name
+                        }. Waiting ${THREAD_FETCH_DELAY_MS}ms.`,
+                    );
+                    // Add delay *after* successful fetch
+                    await sleep(THREAD_FETCH_DELAY_MS);
+                } catch (threadError) {
+                    // Log thread fetch errors but don't fail the whole channel request
+                    logger.logWarn(`Failed to fetch threads for channel ${channel.id} (${channel.name})`, threadError);
+                    threadsMap[channel.id] = []; // Assign empty array on error for this channel
+                    // Consider adding a shorter sleep even on error, or continue immediately
+                    // await sleep(THREAD_FETCH_DELAY_MS / 2);
+                }
+            } else {
+                // For channel types that don't support threads, initialize empty array
+                threadsMap[channel.id] = [];
+            }
+        }
+        logger.logInfo(`Finished sequential thread fetch for guild ${guildId}.`);
 
         // Add the threads to their parent channels in the list
         const channelsWithThreads = channelsAndCategories.map((channel) => {
@@ -231,18 +245,36 @@ app.post('/fetch-channels', async (req, res) => {
 
 // POST /start-export - User selects channel and starts export (Initial Placeholder)
 app.post('/start-export', async (req, res) => {
-    const token = req.body.token?.trim();
-    const guildId = req.body.guildId?.trim(); // Optional: useful for context/folder naming
-    const channelId = req.body.channelId?.trim();
+    // --- Add Type Checks Before Trimming ---
+    const rawToken = req.body.token[0];
+    const rawGuildId = req.body.guildId;
+    const rawChannelId = req.body.channelId;
 
+    console.log(rawToken);
+
+    // Log the raw types for debugging if needed
+    // logger.logInfo(`Raw types received in /start-export: token=${typeof rawToken}, guildId=${typeof rawGuildId}, channelId=${typeof rawChannelId}`);
+
+    const token = typeof rawToken === 'string' ? rawToken.trim() : null;
+    const guildId = typeof rawGuildId === 'string' ? rawGuildId.trim() : null;
+    const channelId = typeof rawChannelId === 'string' ? rawChannelId.trim() : null;
+    // --- End Type Checks ---
+
+    // Validate that token and channelId are now valid strings
     if (!token || !channelId) {
-        logger.logWarn('Attempted to start export without token or channelId.', {
-            token: !!token,
-            channelId: !!channelId,
+        logger.logWarn('Attempted to start export with invalid or missing token/channelId after type check.', {
+            tokenProvided: !!req.body.token, // Check if *anything* was provided
+            channelIdProvided: !!req.body.channelId,
+            tokenIsString: typeof rawToken === 'string',
+            channelIdIsString: typeof rawChannelId === 'string',
         });
-        // Redirect back to home or previous step with error
-        // This depends on how much state we want to rebuild
-        return res.redirect('/?error=' + encodeURIComponent('Missing token or channel ID for export.'));
+        // Redirect back with a more specific error if possible
+        let errorMsg = 'Missing token or channel ID for export.';
+        if (typeof rawToken !== 'string' && req.body.token) errorMsg = 'Invalid token format received.';
+        else if (typeof rawChannelId !== 'string' && req.body.channelId)
+            errorMsg = 'Invalid channel ID format received.';
+
+        return res.redirect('/?error=' + encodeURIComponent(errorMsg));
     }
 
     logger.logInfo(`Export requested for Channel ID: ${channelId} (Guild ID: ${guildId || 'N/A'})`);
