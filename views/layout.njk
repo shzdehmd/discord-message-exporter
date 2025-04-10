@@ -1,0 +1,37 @@
+{# views/layout.njk #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {# Dynamically set the page title #}
+    <title>{{ pageTitle | default('Discord Exporter') }}</title>
+    {# Link to our stylesheet #}
+    <link rel="stylesheet" href="/css/style.css">
+    {# Allow specific pages to add extra head content #}
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1>Discord Channel Exporter</h1>
+            <p>Select a channel and start the export process.</p>
+        </header>
+
+        <main class="content">
+            {# The main content block that child templates will fill #}
+            {% block content %}
+                <p>Content goes here.</p>
+            {% endblock %}
+        </main>
+
+        <footer class="app-footer">
+            <p>Discord Exporter App</p>
+            {# Maybe add links or other info later #}
+        </footer>
+    </div>
+
+    {# Allow specific pages to add scripts at the end of the body #}
+    {% block scripts %}{% endblock %}
+</body>
+</html>
