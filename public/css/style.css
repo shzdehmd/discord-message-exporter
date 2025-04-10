@@ -1,234 +1,294 @@
 /* public/css/style.css */
 
-/* Basic Reset & Body Styling */
+/* --- Base & Variables --- */
+:root {
+    --background-primary: #313338; /* Dark grey background */
+    --background-secondary: #2b2d31; /* Slightly lighter grey for elements */
+    --background-tertiary: #1e1f22; /* Darkest grey */
+    --header-primary: #ffffff; /* White headers */
+    --header-secondary: #b8bbbf; /* Lighter grey headers/text */
+    --text-normal: #dbdee1; /* Main text color */
+    --text-muted: #949aa3; /* Muted text (timestamps, footers) */
+    --interactive-normal: #b8bbbf; /* Default interactive elements */
+    --interactive-hover: #dcddde; /* Hover interactive elements */
+    --interactive-active: #ffffff; /* Active interactive elements */
+    --button-primary-bg: #5865f2; /* Discord blue/blurple */
+    --button-primary-hover: #4752c4;
+    --button-secondary-bg: #4f545c; /* Grey button */
+    --button-secondary-hover: #6a7078;
+    --button-success-bg: #3ba55d; /* Green button */
+    --button-success-hover: #2d7d46;
+    --border-color: #40444b; /* Borders */
+    --input-bg: #1e1f22; /* Input background */
+    --error-bg: #fadce0;
+    --error-text: #a1353f;
+    --error-border: #f1b0b7;
+    --warning-bg: #fcf3d0;
+    --warning-text: #786117;
+    --warning-border: #f3d994;
+
+    --font-primary: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-display: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Usually bolder */
+}
+
+/* --- Basic Reset & Body Styling --- */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--font-primary);
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f4f7f6; /* Light grey background */
-    color: #333; /* Dark grey text */
+    background-color: var(--background-primary);
+    color: var(--text-normal);
+    font-size: 16px;
 }
 
-/* Main Container */
+/* --- Main Container --- */
 .container {
-    max-width: 800px; /* Limit width for better readability */
-    margin: 20px auto; /* Center the container with space */
-    padding: 20px;
-    background-color: #fff; /* White background for content area */
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 25px 30px;
+    background-color: var(--background-secondary);
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
 
-/* Header and Footer */
+/* --- Header and Footer --- */
 .app-header {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .app-header h1 {
     margin-bottom: 0.25em;
-    color: #2c3e50; /* Darker blue-grey */
+    color: var(--header-primary);
+    font-family: var(--font-display);
+    font-weight: 600; /* Bolder for headers */
+}
+.app-header p {
+    color: var(--header-secondary);
 }
 
 .app-footer {
     text-align: center;
     margin-top: 30px;
     padding-top: 15px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color);
     font-size: 0.9em;
-    color: #777;
+    color: var(--text-muted);
 }
 
-/* Form Styling */
+/* --- Form Styling --- */
 .form-section {
     margin-bottom: 30px;
-    padding: 20px;
-    border: 1px solid #e0e0e0;
+    padding: 20px 25px;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
-    background-color: #fdfdfd; /* Slightly off-white */
+    background-color: var(--background-tertiary); /* Darkest background for forms */
 }
 
 .form-section h2,
 .form-section h3 {
     margin-top: 0;
-    margin-bottom: 15px;
-    color: #34495e; /* Slightly darker blue-grey */
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+    margin-bottom: 20px;
+    color: var(--header-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    font-family: var(--font-display);
+    font-weight: 500;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #555;
+    margin-bottom: 8px;
+    font-weight: 500; /* Slightly bolder labels */
+    color: var(--header-secondary);
+    font-size: 0.9em;
+    text-transform: uppercase; /* Discord often uses uppercase labels */
 }
 
 .form-control {
     display: block;
-    width: 100%; /* Full width */
-    padding: 10px;
+    width: 100%;
+    padding: 10px 12px;
     font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; /* Include padding and border in width */
+    font-family: var(--font-primary);
+    border: 1px solid var(--border-color); /* Subtle border */
+    background-color: var(--input-bg); /* Dark input background */
+    color: var(--text-normal);
+    border-radius: 3px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+.form-control:focus {
+    border-color: var(--button-primary-bg); /* Highlight focus with blurple */
+    outline: none; /* Remove default browser outline */
+}
+/* Placeholder text color */
+.form-control::placeholder {
+    color: var(--text-muted);
 }
 
-/* Make selects look consistent */
+/* Select specific styling */
 select.form-control {
-    /* Appearance reset might be needed for more consistency */
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-color: #fff;
-    /* Add arrow */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23b8bbbf' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.7em top 50%;
-    background-size: 0.9em auto;
-    padding-right: 2.5em; /* Space for arrow */
+    background-position: right 0.9em top 50%;
+    background-size: 0.8em auto;
+    padding-right: 2.8em;
 }
 
 /* Optgroup styling */
 optgroup {
-    font-weight: bold;
-    font-style: italic;
-    color: #333;
-    background-color: #f0f0f0; /* Slightly different background */
+    font-weight: 600;
+    color: var(--header-primary);
+    background-color: var(--background-secondary); /* Slightly different background */
+    padding: 5px 0;
 }
 option {
-    padding-left: 10px; /* Indent options slightly */
+    padding: 5px 10px; /* Add some padding */
+    background-color: var(--input-bg); /* Match input background */
+    color: var(--text-normal);
 }
-option[value*='Thread'] {
-    /* Basic way to indent threads visually */
-    padding-left: 25px !important;
-    font-size: 0.95em;
-    color: #444;
+option:hover,
+option:checked {
+    /* Style hover and selected */
+    background-color: var(--button-primary-bg);
+    color: white;
+}
+.thread-option {
+    /* Add some visual indication for threads */
+    padding-left: 25px !important; /* Indent threads */
+    font-style: italic;
+    color: var(--text-muted);
+}
+.thread-option:hover,
+.thread-option:checked {
+    color: white; /* Ensure hover/selected text is visible */
 }
 
-/* Buttons */
+/* --- Buttons --- */
 .btn {
     display: inline-block;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
+    padding: 10px 16px;
+    font-size: 0.95rem; /* Slightly smaller button text */
+    font-weight: 500; /* Medium weight */
+    font-family: var(--font-primary);
     text-align: center;
     text-decoration: none;
     border: none;
-    border-radius: 4px;
+    border-radius: 3px; /* Discord uses less rounded buttons */
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-right: 5px; /* Spacing between buttons */
+    transition: background-color 0.17s ease, color 0.17s ease; /* Discord's transition timing */
+    margin-right: 8px;
+    line-height: 20px; /* Match height */
+    min-width: 96px; /* Discord button min width */
 }
 
 .btn-primary {
-    background-color: #007bff; /* Blue */
+    background-color: var(--button-primary-bg);
     color: white;
 }
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: var(--button-primary-hover);
 }
 
 .btn-secondary {
-    background-color: #6c757d; /* Grey */
+    background-color: var(--button-secondary-bg);
     color: white;
 }
 .btn-secondary:hover {
-    background-color: #5a6268;
+    background-color: var(--button-secondary-hover);
 }
 
 .btn-success {
-    background-color: #28a745; /* Green */
+    background-color: var(--button-success-bg);
     color: white;
 }
 .btn-success:hover {
-    background-color: #218838;
+    background-color: var(--button-success-hover);
 }
 
 .form-actions {
-    margin-top: 20px;
-    text-align: right; /* Align buttons to the right */
+    margin-top: 25px;
+    text-align: right;
 }
 .form-actions .btn:last-child {
     margin-right: 0;
 }
 
-/* Alerts and Warnings */
+/* --- Alerts and Warnings --- */
 .alert {
-    padding: 15px;
+    padding: 12px 15px;
     margin-bottom: 20px;
     border: 1px solid transparent;
     border-radius: 4px;
+    font-size: 0.95em;
 }
 
 .alert-danger {
-    color: #721c24; /* Dark red text */
-    background-color: #f8d7da; /* Light red background */
-    border-color: #f5c6cb; /* Red border */
+    color: var(--error-text);
+    background-color: var(--error-bg);
+    border-color: var(--error-border);
 }
 .alert-danger strong {
-    color: #58151c;
+    color: #7f2a33;
 }
 
 .warning {
-    background-color: #fff3cd; /* Light yellow */
-    border: 1px solid #ffeeba;
-    color: #856404; /* Dark yellow/brown */
+    background-color: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    color: var(--warning-text);
     padding: 10px 15px;
     border-radius: 4px;
     font-size: 0.9em;
     margin-bottom: 15px;
+    line-height: 1.4;
 }
 .warning-title {
     font-weight: bold;
 }
 
-/* Progress Area Placeholder */
+/* --- Progress Area Placeholder --- */
 #export-progress {
-    margin-top: 20px;
+    margin-top: 25px;
     padding: 15px;
-    border: 1px dashed #ccc;
+    border: 1px dashed var(--border-color);
     border-radius: 4px;
-    background-color: #f9f9f9;
+    background-color: var(--background-tertiary);
     min-height: 50px;
-    color: #555;
+    color: var(--text-muted);
+    font-size: 0.9em;
 }
-
-#export-progress p {
-    margin: 5px 0;
-}
-
+/* Progress Bar styling */
 #export-progress .progress-bar-container {
     width: 100%;
-    background-color: #e9ecef;
+    background-color: var(--input-bg); /* Dark background for bar container */
     border-radius: 0.25rem;
     margin-top: 10px;
-    overflow: hidden; /* Ensure inner bar stays contained */
+    overflow: hidden;
+    height: 10px; /* Slimmer bar */
 }
-
 #export-progress .progress-bar {
-    width: 0%; /* Start at 0 */
-    height: 20px;
-    background-color: #007bff;
-    color: white;
-    text-align: center;
-    line-height: 20px;
-    font-size: 0.8em;
-    transition: width 0.4s ease; /* Smooth transition */
+    width: 0%;
+    height: 100%;
+    background-color: var(--button-primary-bg); /* Use blurple for progress */
+    transition: width 0.4s ease;
 }
-
 #export-progress .status-message {
     font-weight: bold;
+    color: var(--header-secondary);
 }
-
 #export-progress .log-message {
     font-size: 0.9em;
-    color: #666;
+    color: var(--text-muted);
 }
