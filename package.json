@@ -1,0 +1,28 @@
+{
+    "name": "discord-exporter-app",
+    "version": "1.0.0",
+    "description": "A web application to export Discord channel messages.",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
+    "keywords": [
+        "discord",
+        "export",
+        "backup",
+        "nunjucks",
+        "express"
+    ],
+    "author": "Your Name",
+    "license": "MIT",
+    "dependencies": {
+        "dotenv": "^16.4.7",
+        "express": "^5.1.0",
+        "nunjucks": "^3.2.4",
+        "undici": "^7.8.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.9"
+    }
+}
