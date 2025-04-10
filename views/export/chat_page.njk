@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle | default("Chat Export") }}</title>
+    {# Link to the CSS file that will be copied locally #}
+    <link rel="stylesheet" href="export-style.css">
+</head>
+{# Pass data attributes needed by the client-side JS #}
+<body data-total-pages="{{ totalPages }}" data-emote-prefix="{{ emoteMarkerPrefix }}">
+    <h1>{{ pageTitle | default("Chat Export") }}</h1>
+    <p>Messages on this page: {{ messageCount }} (Original Batch Index: {{ originalBatchIndex }})</p>
+
+    {# Render the pre-generated HTML for messages for this page #}
+    {# The 'safe' filter is crucial here to prevent double-escaping #}
+    {{ chatLogHtml | safe }}
+
+    {# Link to the JS file that will be copied locally #}
+    <script src="export-client.js"></script>
+</body>
+</html>
