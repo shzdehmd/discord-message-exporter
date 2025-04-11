@@ -44,6 +44,9 @@
                         <option value="{{ guild.id }}">{{ guild.name }} (ID: {{ guild.id }})</option>
                     {% endfor %}
                 </select>
+                <label for="fetch-threads">
+                    <input type="checkbox" name="fetch-threads" id="fetch-threads" />
+                    Fetch Threads (takes a long time depending on the number of channels and threads in a server)</label>
             </div>
             <div class="form-actions">
                 <a href="/" class="btn btn-secondary">Back (Enter Token)</a>

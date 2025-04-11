@@ -351,6 +351,7 @@ app.post('/fetch-guilds', async (req, res) => {
 app.post('/fetch-channels', async (req, res) => {
     /* ... Omitted for brevity - No changes ... */ const token = req.body.token?.trim();
     const guildId = req.body.guildId?.trim();
+    const hasFetchThreads = req.body['fetch-threads'] === 'on' ? true : false;
     if (!token || !guildId) {
         const q = new URLSearchParams();
         if (token) q.set('token', token);
@@ -371,18 +372,20 @@ app.post('/fetch-channels', async (req, res) => {
         const channelsCats = await fetchChannels(token, guildId);
         const threadsMap = {};
         const DELAY = 300;
-        for (const c of channelsCats) {
-            if ([0, 5].includes(c.type)) {
-                try {
-                    const t = await fetchThreads(token, c.id, c.type);
-                    threadsMap[c.id] = t || [];
-                    await sleep(DELAY);
-                } catch (e) {
-                    logger.logWarn(`Failed fetch threads ${c.id}`, e);
+        if (hasFetchThreads) {
+            for (const c of channelsCats) {
+                if ([0, 5].includes(c.type)) {
+                    try {
+                        const t = await fetchThreads(token, c.id, c.type);
+                        threadsMap[c.id] = t || [];
+                        await sleep(DELAY);
+                    } catch (e) {
+                        logger.logWarn(`Failed fetch threads ${c.id}`, e);
+                        threadsMap[c.id] = [];
+                    }
+                } else {
                     threadsMap[c.id] = [];
                 }
-            } else {
-                threadsMap[c.id] = [];
             }
         }
         const channels = channelsCats.map((c) => ({ ...c, threads: threadsMap[c.id] || [] }));
