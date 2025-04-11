@@ -94,6 +94,10 @@ async function runExportProcess(token, channelId, guildId, channelName, jobId) {
         directory: exportFolderName,
     });
 
+    // --- Create Download Cache for this specific job ---
+    const downloadCache = new Map(); // <<< Cache is created here
+    logger.logInfo(`[${jobId}] Initialized download cache.`);
+
     try {
         // 1. Create Directories
         await fs.mkdir(rawDir, { recursive: true });
@@ -187,7 +191,13 @@ async function runExportProcess(token, channelId, guildId, channelName, jobId) {
             sendJobUpdate(jobId, { status: 'progress', message: processMsg, batch: batchIndex });
             try {
                 // *** Pass jobId and sendJobUpdate to processMessages ***
-                const processedMessages = await processMessages(messages, exportDir, jobId, sendJobUpdate);
+                const processedMessages = await processMessages(
+                    messages,
+                    exportDir,
+                    jobId,
+                    sendJobUpdate,
+                    downloadCache,
+                );
                 // Save Processed
                 try {
                     await fs.writeFile(
