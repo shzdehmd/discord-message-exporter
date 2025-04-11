@@ -1,6 +1,24 @@
 // public/js/export-client.js
 
+function convertEmoteMarkers(text) {
+    // First, handle EMOTE<em>MARKER:... </em>
+    let updated = text.replace(/EMOTE<em>(MARKER:[^<]+)<\/em>/g, (_, marker) => {
+        return `EMOTE_${marker}_`;
+    });
+
+    // Handle EMOTEMARKER:downloadedfiles/...
+    updated = updated.replace(
+        /EMOTEMARKER:downloadedfiles\/([\w\/-]+\.(png|jpg|jpeg|gif|webp))(\w*)/gi,
+        (_, filepath, _ext, after) => {
+            return `EMOTE_MARKER:downloaded_files/${filepath}|${after}`;
+        },
+    );
+
+    return updated;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    document.body.innerHTML = convertEmoteMarkers(document.body.innerHTML);
     // --- Get Constants from Data Attributes ---
     const emoteMarkerPrefix = document.body.dataset.emotePrefix || 'EMOTE_MARKER:'; // Fallback just in case
     const totalPages = parseInt(document.body.dataset.totalPages || '0', 10);
@@ -11,7 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const escapedPrefix = emoteMarkerPrefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const markerRegex = new RegExp(`${escapedPrefix}([\\w\\/.-]+)\\|([^|]+)`, 'g');
 
-        const elements = document.querySelectorAll('.message-text, .embed-description, .embed-field-value');
+        const elements = document.querySelectorAll(
+            '.message-text, .embed-description, .embed-field-value, .reply-content-preview',
+        );
         elements.forEach((el) => {
             if (!el.innerHTML) return;
             el.innerHTML = el.innerHTML.replace(markerRegex, (_match, relativePath, altText) => {
