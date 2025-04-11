@@ -1,294 +1,501 @@
-/* public/css/style.css */
-
-/* --- Base & Variables --- */
+/* Discord-like Dark Theme for Discord Exporter */
 :root {
-    --background-primary: #313338; /* Dark grey background */
-    --background-secondary: #2b2d31; /* Slightly lighter grey for elements */
-    --background-tertiary: #1e1f22; /* Darkest grey */
-    --header-primary: #ffffff; /* White headers */
-    --header-secondary: #b8bbbf; /* Lighter grey headers/text */
-    --text-normal: #dbdee1; /* Main text color */
-    --text-muted: #949aa3; /* Muted text (timestamps, footers) */
-    --interactive-normal: #b8bbbf; /* Default interactive elements */
-    --interactive-hover: #dcddde; /* Hover interactive elements */
-    --interactive-active: #ffffff; /* Active interactive elements */
-    --button-primary-bg: #5865f2; /* Discord blue/blurple */
-    --button-primary-hover: #4752c4;
-    --button-secondary-bg: #4f545c; /* Grey button */
-    --button-secondary-hover: #6a7078;
-    --button-success-bg: #3ba55d; /* Green button */
-    --button-success-hover: #2d7d46;
-    --border-color: #40444b; /* Borders */
-    --input-bg: #1e1f22; /* Input background */
-    --error-bg: #fadce0;
-    --error-text: #a1353f;
-    --error-border: #f1b0b7;
-    --warning-bg: #fcf3d0;
-    --warning-text: #786117;
-    --warning-border: #f3d994;
+    /* Discord color palette */
+    --blurple: #5865f2;
+    --blurple-hover: #4752c4;
+    --green: #57f287;
+    --yellow: #fee75c;
+    --danger: #ed4245;
+    --dark-background: #36393f;
+    --darker-background: #2f3136;
+    --darkest-background: #202225;
+    --light-text: #ffffff;
+    --muted-text: #b9bbbe;
+    --channellist-text: #8e9297;
+    --input-background: #40444b;
+    --border-color: #42464d;
+    --elevated-bg: #40444b;
+    --box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.2);
 
-    --font-primary: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --font-display: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Usually bolder */
+    /* Typography */
+    --font-primary: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-/* --- Basic Reset & Body Styling --- */
+/* Base Styling */
+html,
 body {
+    background-color: var(--darkest-background);
+    color: var(--light-text);
     font-family: var(--font-primary);
-    line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: var(--background-primary);
-    color: var(--text-normal);
-    font-size: 16px;
+    height: 100%;
+    line-height: 1.5;
 }
 
-/* --- Main Container --- */
 .container {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 25px 30px;
-    background-color: var(--background-secondary);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* --- Header and Footer --- */
+/* Header Styling */
 .app-header {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
+    background-color: var(--darker-background);
+    border-radius: 8px 8px 0 0;
+    padding: 24px;
+    margin-bottom: 20px;
     border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow);
+    animation: fadeInDown 0.6s ease-out;
 }
 
 .app-header h1 {
-    margin-bottom: 0.25em;
-    color: var(--header-primary);
-    font-family: var(--font-display);
-    font-weight: 600; /* Bolder for headers */
+    color: var(--light-text);
+    margin: 0;
+    margin-bottom: 10px;
+    font-size: 28px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
+
 .app-header p {
-    color: var(--header-secondary);
+    color: var(--muted-text);
+    margin: 0;
 }
 
+/* Main Content Styling */
+.content {
+    background-color: var(--dark-background);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: var(--box-shadow);
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Footer Styling */
 .app-footer {
-    text-align: center;
-    margin-top: 30px;
-    padding-top: 15px;
+    background-color: var(--darker-background);
+    border-radius: 0 0 8px 8px;
+    padding: 16px 24px;
+    margin-top: 20px;
     border-top: 1px solid var(--border-color);
-    font-size: 0.9em;
-    color: var(--text-muted);
+    text-align: center;
+    color: var(--muted-text);
+    font-size: 14px;
 }
 
-/* --- Form Styling --- */
+/* Form Elements */
 .form-section {
     margin-bottom: 30px;
-    padding: 20px 25px;
+    padding: 20px;
+    background-color: var(--darker-background);
+    border-radius: 8px;
     border: 1px solid var(--border-color);
-    border-radius: 5px;
-    background-color: var(--background-tertiary); /* Darkest background for forms */
+    transition: all 0.3s ease;
 }
 
-.form-section h2,
-.form-section h3 {
+.form-section:hover {
+    box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+}
+
+.form-section h2 {
+    color: var(--light-text);
     margin-top: 0;
-    margin-bottom: 20px;
-    color: var(--header-primary);
-    border-bottom: 1px solid var(--border-color);
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
     padding-bottom: 10px;
-    font-family: var(--font-display);
-    font-weight: 500;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500; /* Slightly bolder labels */
-    color: var(--header-secondary);
-    font-size: 0.9em;
-    text-transform: uppercase; /* Discord often uses uppercase labels */
+    color: var(--light-text);
+    font-weight: 500;
 }
 
 .form-control {
-    display: block;
     width: 100%;
     padding: 10px 12px;
-    font-size: 1rem;
-    font-family: var(--font-primary);
-    border: 1px solid var(--border-color); /* Subtle border */
-    background-color: var(--input-bg); /* Dark input background */
-    color: var(--text-normal);
-    border-radius: 3px;
-    box-sizing: border-box;
-    transition: border-color 0.2s ease;
+    background-color: var(--input-background);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--light-text);
+    font-size: 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
+.form-control[type='password'] {
+    width: calc(100% - 26px);
+}
+
 .form-control:focus {
-    border-color: var(--button-primary-bg); /* Highlight focus with blurple */
-    outline: none; /* Remove default browser outline */
-}
-/* Placeholder text color */
-.form-control::placeholder {
-    color: var(--text-muted);
+    border-color: var(--blurple);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
 }
 
-/* Select specific styling */
-select.form-control {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23b8bbbf' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.9em top 50%;
-    background-size: 0.8em auto;
-    padding-right: 2.8em;
+select.form-control option {
+    background-color: var(--darker-background);
+    color: var(--light-text);
 }
 
-/* Optgroup styling */
-optgroup {
+select.form-control optgroup {
     font-weight: 600;
-    color: var(--header-primary);
-    background-color: var(--background-secondary); /* Slightly different background */
-    padding: 5px 0;
-}
-option {
-    padding: 5px 10px; /* Add some padding */
-    background-color: var(--input-bg); /* Match input background */
-    color: var(--text-normal);
-}
-option:hover,
-option:checked {
-    /* Style hover and selected */
-    background-color: var(--button-primary-bg);
-    color: white;
-}
-.thread-option {
-    /* Add some visual indication for threads */
-    padding-left: 25px !important; /* Indent threads */
-    font-style: italic;
-    color: var(--text-muted);
-}
-.thread-option:hover,
-.thread-option:checked {
-    color: white; /* Ensure hover/selected text is visible */
+    color: var(--blurple);
+    background-color: var(--darkest-background);
 }
 
-/* --- Buttons --- */
+.thread-option {
+    padding-left: 20px;
+    font-style: italic;
+}
+
+/* Buttons */
 .btn {
     display: inline-block;
     padding: 10px 16px;
-    font-size: 0.95rem; /* Slightly smaller button text */
-    font-weight: 500; /* Medium weight */
-    font-family: var(--font-primary);
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
     text-align: center;
-    text-decoration: none;
-    border: none;
-    border-radius: 3px; /* Discord uses less rounded buttons */
     cursor: pointer;
-    transition: background-color 0.17s ease, color 0.17s ease; /* Discord's transition timing */
-    margin-right: 8px;
-    line-height: 20px; /* Match height */
-    min-width: 96px; /* Discord button min width */
+    border: none;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    text-decoration: none;
+    outline: none;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(1px);
 }
 
 .btn-primary {
-    background-color: var(--button-primary-bg);
-    color: white;
+    background-color: var(--blurple);
+    color: var(--light-text);
 }
+
 .btn-primary:hover {
-    background-color: var(--button-primary-hover);
+    background-color: var(--blurple-hover);
 }
 
 .btn-secondary {
-    background-color: var(--button-secondary-bg);
-    color: white;
+    background-color: var(--elevated-bg);
+    color: var(--light-text);
 }
+
 .btn-secondary:hover {
-    background-color: var(--button-secondary-hover);
+    background-color: #4a4e56;
 }
 
 .btn-success {
-    background-color: var(--button-success-bg);
-    color: white;
+    background-color: var(--green);
+    color: #000;
 }
+
 .btn-success:hover {
-    background-color: var(--button-success-hover);
+    background-color: #45cc70;
+}
+
+.btn + .btn {
+    margin-left: 10px;
 }
 
 .form-actions {
-    margin-top: 25px;
-    text-align: right;
-}
-.form-actions .btn:last-child {
-    margin-right: 0;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
 }
 
-/* --- Alerts and Warnings --- */
+/* Alerts */
 .alert {
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    border: 1px solid transparent;
+    padding: 16px;
     border-radius: 4px;
-    font-size: 0.95em;
+    margin-bottom: 20px;
+    animation: slideIn 0.3s ease-out;
 }
 
 .alert-danger {
-    color: var(--error-text);
-    background-color: var(--error-bg);
-    border-color: var(--error-border);
-}
-.alert-danger strong {
-    color: #7f2a33;
+    background-color: rgba(237, 66, 69, 0.1);
+    border: 1px solid var(--danger);
+    color: #f9a8a9;
 }
 
+/* Warning box */
 .warning {
-    background-color: var(--warning-bg);
-    border: 1px solid var(--warning-border);
-    color: var(--warning-text);
-    padding: 10px 15px;
+    background-color: rgba(254, 231, 92, 0.1);
+    border: 1px solid var(--yellow);
+    color: #feecab;
+    padding: 15px;
     border-radius: 4px;
-    font-size: 0.9em;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.warning-title {
+    color: var(--yellow);
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Error Page Specific */
+.error-page {
+    text-align: center;
+    padding: 40px 20px;
+    animation: pulse 2s infinite;
+}
+
+.error-page h2 {
+    font-size: 28px;
+    color: var(--light-text);
+    margin-bottom: 20px;
+}
+
+.stack-trace {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--darkest-background);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    text-align: left;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.stack-trace h3 {
+    margin-top: 0;
+    font-size: 16px;
+    color: var(--danger);
+    margin-bottom: 10px;
+}
+
+.stack-trace pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 14px;
+    color: var(--muted-text);
+    font-family: monospace;
     line-height: 1.4;
 }
-.warning-title {
-    font-weight: bold;
+
+/* Checkbox styling */
+input[type='checkbox'] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background-color: var(--input-background);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 8px;
+    position: relative;
+    transition: background-color 0.2s;
+    cursor: pointer;
 }
 
-/* --- Progress Area Placeholder --- */
-#export-progress {
-    margin-top: 25px;
-    padding: 15px;
-    border: 1px dashed var(--border-color);
-    border-radius: 4px;
-    background-color: var(--background-tertiary);
-    min-height: 50px;
-    color: var(--text-muted);
-    font-size: 0.9em;
+input[type='checkbox']:checked {
+    background-color: var(--blurple);
+    border-color: var(--blurple);
 }
-/* Progress Bar styling */
-#export-progress .progress-bar-container {
-    width: 100%;
-    background-color: var(--input-bg); /* Dark background for bar container */
-    border-radius: 0.25rem;
-    margin-top: 10px;
+
+input[type='checkbox']:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+input[type='checkbox'] + label {
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+/* For password fields - add show/hide password functionality */
+.password-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--muted-text);
+    cursor: pointer;
+}
+
+/* Progress bar styling for future use */
+.progress {
+    height: 12px;
+    background-color: var(--input-background);
+    border-radius: 6px;
     overflow: hidden;
-    height: 10px; /* Slimmer bar */
+    margin: 15px 0;
 }
-#export-progress .progress-bar {
-    width: 0%;
+
+.progress-bar {
     height: 100%;
-    background-color: var(--button-primary-bg); /* Use blurple for progress */
-    transition: width 0.4s ease;
+    background-color: var(--blurple);
+    border-radius: 6px;
+    transition: width 0.3s ease;
 }
-#export-progress .status-message {
-    font-weight: bold;
-    color: var(--header-secondary);
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
-#export-progress .log-message {
-    font-size: 0.9em;
-    color: var(--text-muted);
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(88, 101, 242, 0.3);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(88, 101, 242, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(88, 101, 242, 0);
+    }
+}
+
+/* Loading spinner animation */
+.spinner {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--blurple);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Discord-like tooltip */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--darkest-background);
+    color: var(--light-text);
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn + .btn {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .form-section {
+        padding: 15px;
+    }
+}
+
+/* Add focus styles for accessibility */
+*:focus-visible {
+    outline: 2px solid var(--blurple);
+    outline-offset: 2px;
+}
+
+/* Discord-style scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--darkest-background);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #202225;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #2b2d31;
 }
